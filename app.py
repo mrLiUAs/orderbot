@@ -21,9 +21,9 @@ handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 line_bot_api.push_message(os.getenv('MY_ID'), TextSendMessage(text='你可以開始了'))
 
 # /callback Post Request
-@app.route("/")
-def index():
-  return render_template(r'index.html')
+# @app.route("/")
+# def index():
+#   return render_template(r'index.html')
 
 @app.route("/callback", methods=['POST'])
 def callback():
