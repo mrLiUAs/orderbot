@@ -1,8 +1,8 @@
 
 import os
 from flask import Flask, request, abort, render_template
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 from linebot import (
   LineBotApi, WebhookHandler
