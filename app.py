@@ -1,6 +1,6 @@
 
 import os
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -21,6 +21,10 @@ handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 line_bot_api.push_message(os.getenv('MY_ID'), TextSendMessage(text='你可以開始了'))
 
 # /callback Post Request
+@app.route("/")
+def index():
+  return render_template(r'index.html')
+
 @app.route("/callback", methods=['POST'])
 def callback():
   # get X-Line-Signature header value
