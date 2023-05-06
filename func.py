@@ -12,10 +12,10 @@ from linebot.models.actions import URIAction
 
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 
-import pygsheets
-gc = pygsheets.authorize(service_file='ourorder-65e3b5c3447d.json')
-db = gc.open_by_url("https://docs.google.com/spreadsheets/d/1RFCcgCFkhk6lhfF04-0EeeILHSP7mwwPVObYUxaAS-g/edit#gid=0")[0]
-df = db.get_as_df()
+# import pygsheets
+# gc = pygsheets.authorize()
+# db = gc.open_by_url("https://docs.google.com/spreadsheets/d/1RFCcgCFkhk6lhfF04-0EeeILHSP7mwwPVObYUxaAS-g/edit#gid=0")[0]
+# df = db.get_as_df()
 
 def preorder():
     message = TemplateSendMessage(
