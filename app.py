@@ -15,7 +15,7 @@ from linebot.models import *
 
 # Google Sheet
 import pygsheets
-gc = pygsheets.authorize(service_file_env_var='SERVICE_FILE')
+gc = pygsheets.authorize(service_account_env_var="SERVICE_FILE")
 db_d = gc.open_by_url(
     "https://docs.google.com/spreadsheets/d/1RFCcgCFkhk6lhfF04-0EeeILHSP7mwwPVObYUxaAS-g/edit#gid=0")[0]
 
