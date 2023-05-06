@@ -1,6 +1,7 @@
-
 import os
 from flask import Flask, request, abort, render_template
+from urllib.parse import parse_qsl
+import func
 # from dotenv import load_dotenv
 # load_dotenv()
 
@@ -45,9 +46,19 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-  print('hehe')
   message = TextSendMessage(text=event.message.text)
+  if message == "我要預購":
+    func.preorder()
   line_bot_api.reply_message(event.reply_token, message)
+  if isinstance(event, PostbackEvent):
+    backdata = dict(parse_qsl(event.postback.data))
+    
+    if backdata.get('action') == '要美乃滋':
+        func.(event, backdata)
+        
+    elif backdata.get('action') == '不要美乃滋':
+        func.sendback_pure(event, backdata)
+
 
 # main
 if __name__ == "__main__":
