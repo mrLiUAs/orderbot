@@ -1,8 +1,8 @@
 import os
 from flask import Flask, request, abort, render_template
 from urllib.parse import parse_qsl
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 import func
 
 from linebot import (
