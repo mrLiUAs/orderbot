@@ -73,7 +73,7 @@ def handle_message(event):
         if event.message.text == '要美乃滋':
             try:
                 tmp[id]['sauce'] = 1
-                func.send_back_grade(event)
+                func.send_back_amount_mini(event)
             except:
                 replyText(event, "抱歉，革命失敗，請再試一次")
         elif event.message.text == '不要美乃滋':
@@ -101,7 +101,7 @@ def handle_message(event):
                 print("yee1")
                 tmp[id]['grade'] = event.message.text.split('：')[1]
                 print("yee2")
-                if tmp[id]['grade'] != "老師":
+                if tmp[id]['grade'] != "老師" and tmp[id]['grade'] != "家長":
                     func.send_back_class(event)
                 else:
                     tmp[id]['class'] = ""
@@ -111,10 +111,18 @@ def handle_message(event):
             except:
                 replyText(event, "抱歉，革命失敗，請再試一次")
                 print("好亮")
-        elif event.message.text.split('：')[0] == '班級':
+        elif event.message.text.split('：')[0] == '班級' or event.message.text.split(':')[0] == '班級':
             try:
-                tmp[id]['class'] = event.message.text.split('：')[1]
-                func.send_back_number(event)
+                if event.message.text.split('：')[0] == "班級":
+                    _class = event.message.text.split('：')[1]
+                else:
+                    _class = event.message.text.split(':')[1]
+                
+                if not _class.isalpha() or len(_class) != 1:
+                    replyText(event, "同志，請輸入班級啊！（範例：「班級：忠」）")
+                else:
+                    tmp[id]['class'] = event.message.text.split('：')[1]
+                    func.send_back_number(event)
             except:
                 replyText(event, "抱歉，革命失敗，請再試一次")
         elif event.message.text.split('：')[0] == "座號" or event.message.text.split(':')[0] == "座號":
@@ -166,20 +174,24 @@ def handle_message(event):
                 note = event.message.text.split('：')[1]
             else:
                 note = event.message.text.split(':')[1]
-            
             try:
                 tmp[id]['note'] = note
-                func.send_back_confirm(event, tmp[id]['amount_m'], tmp[id]['amount_l'])
+                total = func.send_back_confirm(event, tmp[id]['amount_m'], tmp[id]['amount_l'])
+                if total != -1:
+                    tmp[id]['total'] = total
             except:
                 replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text == '結帳':
+
+        elif event.message.text == '送出':
             if db.append(id, tmp):
                 replyText(event, "革命成功——已接到訂單")
             else:
                 replyText(event, "抱歉，革命失敗，請再試一次")
+
         elif event.message.text == '取消':
             tmp.pop(id, -1)
             replyText(event, "革命未成，永不忘初衷！")
+            
         else:
             replyText(event, "抱歉同志，沒辦法理解您的指令。難道你是反革命分子？")
     else:

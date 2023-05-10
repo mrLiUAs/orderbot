@@ -17,6 +17,7 @@ def where_d(id) -> int:
     return df[df['id'] == id].index[0]
 
 def append(id, tmp: dict) -> bool:
+    print(tmp)
     try:
         if tmp[id]['type'] == "deliver":
             db_d.append_table(values=[
@@ -49,10 +50,13 @@ def how_much_m(amount: int) -> dict:
     l = {}
     i=0
     for price in df['price']:
-        if amount // price:
-            l[df.values[i][0]] = {"amount": amount // price, "price": price * amount}
-            amount = amount % price
+        if amount // df.values[i][1]:
+            l[df.values[i][0]] = {"amount": amount // df.values[i][1], "price": price * (amount // df.values[i][1])}
+            amount = amount % df.values[i][1]
         i += 1
+
+    print(l)
+    #TODO
     
     return l
         
@@ -67,10 +71,9 @@ def how_much_l(amount: int) -> dict:
     l = {}
     i=0
     for price in df['price']:
-        if amount // price:
-            l[df.values[i][0]] = {"amount": amount // price, "price": price * amount}
-            amount = amount % price
+        if amount // df.values[i][1]:
+            l[df.values[i][0]] = {"amount": amount // df.values[i][1], "price": price * (amount // df.values[i][1])}
+            amount = amount % df.values[i][1]
         i += 1
     
     return l
-        
