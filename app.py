@@ -93,7 +93,11 @@ def handle_message(event):
             try:
                 amount_l = int(event.message.text.split('：')[1])
                 tmp[id]['amount_l'] = amount_l
-                func.send_back_grade(event)
+                if tmp[id]['amount_m'] + tmp[id]['amount_l'] == 0:
+                    replyText(event, "同志，你動搖了，請至少點一份啊！")
+                    tmp.pop(id, -1)
+                else:
+                    func.send_back_grade(event)
             except:
                 replyText(event, "抱歉，革命失敗，請再試一次")
         elif event.message.text.split('：')[0] == '年級':

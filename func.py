@@ -74,6 +74,7 @@ def send_back_amount_mini(event):
         message = TextSendMessage(
             text='同志要幾份MINI堡？',
             quick_reply=QuickReply(items=[
+                QuickReplyButton(action=PostbackTemplateAction(label="0", text="數量（小）：0", data='NUM&0')),
                 QuickReplyButton(action=PostbackTemplateAction(label="1", text="數量（小）：1", data='NUM&1')),
                 QuickReplyButton(action=PostbackTemplateAction(label="2", text="數量（小）：2", data='NUM&2')),
                 QuickReplyButton(action=PostbackTemplateAction(label="3", text="數量（小）：3", data='NUM&3')),
@@ -96,6 +97,7 @@ def send_back_amount_large(event):
         message = TextSendMessage(
             text='同志要幾份LARGE堡？',
             quick_reply=QuickReply(items=[
+                QuickReplyButton(action=PostbackTemplateAction(label="0", text="數量（大）：0", data='NUM&0')),
                 QuickReplyButton(action=PostbackTemplateAction(label="1", text="數量（大）：1", data='NUM&1')),
                 QuickReplyButton(action=PostbackTemplateAction(label="2", text="數量（大）：2", data='NUM&2')),
                 QuickReplyButton(action=PostbackTemplateAction(label="3", text="數量（大）：3", data='NUM&3')),
