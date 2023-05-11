@@ -60,146 +60,176 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     id = event.source.user_id
-    if db.is_ok(id):
-        message = TextSendMessage(text=event.message.text)
-        # line_bot_api.reply_message(event.reply_token, message)
-        if event.message.text == "我要預購":
-            tmp[id] = {'type': 'preorder'}
-            func.preorder()
-        elif event.message.text == "我要外送":
-            tmp[id] = {'type': 'deliver'}
-            func.deliver(event)
-
-        if event.message.text == '要美乃滋':
+    if id in os.getenv("ADMINS"):
+        cmd = event.message.text.split(' ')
+        if cmd[0] == 'C':
             try:
-                tmp[id]['sauce'] = 1
-                func.send_back_amount_mini(event)
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text == '不要美乃滋':
-            try:
-                tmp[id]['sauce'] = 0
-                func.send_back_amount_mini(event)
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == '數量（小）':
-            try:
-                amount_m = int(event.message.text.split('：')[1])
-                tmp[id]['amount_m'] = amount_m
-                func.send_back_amount_large(event)
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == '數量（大）':
-            try:
-                amount_l = int(event.message.text.split('：')[1])
-                tmp[id]['amount_l'] = amount_l
-                if tmp[id]['amount_m'] + tmp[id]['amount_l'] == 0:
-                    replyText(event, "同志，你動搖了，請至少點一份啊！")
-                    tmp.pop(id, -1)
+                if int(cmd[1]) <= 1:
+                    replyText(event, "你這個笨蛋")
                 else:
-                    func.send_back_grade(event)
+                    if db.delete(int(cmd[1])):
+                        replyText(event, "結單成功")
+                    else:
+                        replyText(event, "結單失敗")
             except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == '年級':
+                replyText(event, "loser")
+        elif cmd[0] == 'D':
             try:
-                print("yee1")
-                tmp[id]['grade'] = event.message.text.split('：')[1]
-                print("yee2")
-                if tmp[id]['grade'] != "老師" and tmp[id]['grade'] != "家長":
-                    func.send_back_class(event)
+                if int(cmd[1]) <= 1:
+                    replyText(event, "你這個笨蛋")
                 else:
-                    tmp[id]['class'] = ""
-                    tmp[id]['number'] = ""
-                    func.send_back_name(event)
-                print("yee3")
+                    id_client = db.what_id(cmd[1])
+                    if db.delete(int(cmd[1])):
+                        replyText(event, "刪除成功")
+                        line_bot_api.push_message(id_client, TextSendMessage(text='你的訂單已被刪除'))
+                    else:
+                        replyText(event, "刪除失敗")
             except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-                print("好亮")
-        elif event.message.text.split('：')[0] == '班級' or event.message.text.split(':')[0] == '班級':
-            try:
-                if event.message.text.split('：')[0] == "班級":
-                    _class = event.message.text.split('：')[1]
-                else:
-                    _class = event.message.text.split(':')[1]
-                
-                if not _class.isalpha() or len(_class) != 1:
-                    replyText(event, "同志，請輸入班級啊！（範例：「班級：忠」）")
-                else:
-                    tmp[id]['class'] = event.message.text.split('：')[1]
-                    func.send_back_number(event)
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == "座號" or event.message.text.split(':')[0] == "座號":
-            if event.message.text.split('：')[0] == "座號":
-                number = event.message.text.split('：')[1]
-            else:
-                number = event.message.text.split(':')[1]
-            try:
-                if number.isdigit():
-                    tmp[id]['number'] = number
-                    func.send_back_name(event)
-                else:
-                    replyText(event, "同志，請輸入數字啊！（範例：「座號：1」）")
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == "姓名" or event.message.text.split(':')[0] == "姓名":
-            if event.message.text.split('：')[0] == "姓名":
-                name = event.message.text.split('：')[1]
-            else:
-                name = event.message.text.split(':')[1]
-
-            try:
-                if name.isalpha():
-                    tmp[id]['name'] = name
-
-                    if tmp[id]['type'] == 'deliver':
-                        func.send_back_pos(event)
-
-                else:
-                    replyText(event, "同志，請輸入名字啊！（範例：「姓名：弗拉迪米爾·列寧」）")
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == "位置" or event.message.text.split(':')[0] == "位置":
-            if event.message.text.split('：')[0] == "位置":
-                location = event.message.text.split('：')[1]
-            else:
-                location = event.message.text.split(':')[1]
-            
-            try:
-                if location.isalpha():
-                    tmp[id]['pos'] = location
-                    func.send_back_note(event)
-                else:
-                    replyText(event, "同志，請輸入明確的位置啊！（範例：「位置：校門口」）")
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-        elif event.message.text.split('：')[0] == "備註" or event.message.text.split('：')[0] == "備注" or event.message.text.split(':')[0] == "備註" or event.message.text.split(':')[0] == "備注":
-            if event.message.text.split('：')[0] == "備註" or event.message.text.split('：')[0] == "備注":
-                note = event.message.text.split('：')[1]
-            else:
-                note = event.message.text.split(':')[1]
-            try:
-                tmp[id]['note'] = note
-                total = func.send_back_confirm(event, tmp[id]['amount_m'], tmp[id]['amount_l'])
-                if total != -1:
-                    tmp[id]['total'] = total
-            except:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-
-        elif event.message.text == '送出':
-            if db.append(id, tmp):
-                replyText(event, "革命成功——已接到訂單")
-            else:
-                replyText(event, "抱歉，革命失敗，請再試一次")
-
-        elif event.message.text == '取消':
-            tmp.pop(id, -1)
-            replyText(event, "革命未成，永不忘初衷！")
-            
+                replyText(event, "loser")
         else:
-            replyText(event, "抱歉同志，沒辦法理解您的指令。難道你是反革命分子？")
+            replyText(event, "你要不要聽聽看你自己在講什麼？")
+
     else:
-        replyText(event, "抱歉，無法處理您的訂單，這可能是因為訂單數出過上限。歡迎同志親自到訪參與革命！")
+        if db.is_ok(id):
+            message = TextSendMessage(text=event.message.text)
+            # line_bot_api.reply_message(event.reply_token, message)
+            if event.message.text == "我要預購":
+                tmp[id] = {'type': 'preorder'}
+                func.preorder()
+            elif event.message.text == "我要外送":
+                tmp[id] = {'type': 'deliver'}
+                func.deliver(event)
+
+            if event.message.text == '要美乃滋':
+                try:
+                    tmp[id]['sauce'] = 1
+                    func.send_back_amount_mini(event)
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text == '不要美乃滋':
+                try:
+                    tmp[id]['sauce'] = 0
+                    func.send_back_amount_mini(event)
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == '數量（小）':
+                try:
+                    amount_m = int(event.message.text.split('：')[1])
+                    tmp[id]['amount_m'] = amount_m
+                    func.send_back_amount_large(event)
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == '數量（大）':
+                try:
+                    amount_l = int(event.message.text.split('：')[1])
+                    tmp[id]['amount_l'] = amount_l
+                    if tmp[id]['amount_m'] + tmp[id]['amount_l'] == 0:
+                        replyText(event, "同志，你動搖了，請至少點一份啊！")
+                        tmp.pop(id, -1)
+                    else:
+                        func.send_back_grade(event)
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == '年級':
+                try:
+                    print("yee1")
+                    tmp[id]['grade'] = event.message.text.split('：')[1]
+                    print("yee2")
+                    if tmp[id]['grade'] != "老師" and tmp[id]['grade'] != "家長":
+                        func.send_back_class(event)
+                    else:
+                        tmp[id]['class'] = ""
+                        tmp[id]['number'] = ""
+                        func.send_back_name(event)
+                    print("yee3")
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+                    print("好亮")
+            elif event.message.text.split('：')[0] == '班級' or event.message.text.split(':')[0] == '班級':
+                try:
+                    if event.message.text.split('：')[0] == "班級":
+                        _class = event.message.text.split('：')[1]
+                    else:
+                        _class = event.message.text.split(':')[1]
+                    
+                    if not _class.isalpha() or len(_class) != 1:
+                        replyText(event, "同志，請輸入班級啊！\n（範例：「班級：忠」）")
+                    else:
+                        tmp[id]['class'] = event.message.text.split('：')[1]
+                        func.send_back_number(event)
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == "座號" or event.message.text.split(':')[0] == "座號":
+                if event.message.text.split('：')[0] == "座號":
+                    number = event.message.text.split('：')[1]
+                else:
+                    number = event.message.text.split(':')[1]
+                try:
+                    if number.isdigit():
+                        tmp[id]['number'] = number
+                        func.send_back_name(event)
+                    else:
+                        replyText(event, "同志，請輸入數字啊！\n（範例：「座號：1」）")
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == "姓名" or event.message.text.split(':')[0] == "姓名":
+                if event.message.text.split('：')[0] == "姓名":
+                    name = event.message.text.split('：')[1]
+                else:
+                    name = event.message.text.split(':')[1]
+
+                try:
+                    if name.isalpha():
+                        tmp[id]['name'] = name
+
+                        if tmp[id]['type'] == 'deliver':
+                            func.send_back_pos(event)
+
+                    else:
+                        replyText(event, "同志，請輸入名字啊！\n（範例：「姓名：弗拉迪米爾·列寧」）")
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == "位置" or event.message.text.split(':')[0] == "位置":
+                if event.message.text.split('：')[0] == "位置":
+                    location = event.message.text.split('：')[1]
+                else:
+                    location = event.message.text.split(':')[1]
+                
+                try:
+                    if location.isalpha():
+                        tmp[id]['pos'] = location
+                        func.send_back_note(event)
+                    else:
+                        replyText(event, "同志，請輸入明確的位置啊！\n（範例：「位置：校門口」）")
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+            elif event.message.text.split('：')[0] == "備註" or event.message.text.split('：')[0] == "備注" or event.message.text.split(':')[0] == "備註" or event.message.text.split(':')[0] == "備注":
+                if event.message.text.split('：')[0] == "備註" or event.message.text.split('：')[0] == "備注":
+                    note = event.message.text.split('：')[1]
+                else:
+                    note = event.message.text.split(':')[1]
+                try:
+                    tmp[id]['note'] = note
+                    total = func.send_back_confirm(event, tmp[id]['amount_m'], tmp[id]['amount_l'])
+                    if total != -1:
+                        tmp[id]['total'] = total
+                except:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+
+            elif event.message.text == '送出':
+                if db.append(id, tmp):
+                    replyText(event, "革命成功——已接到訂單")
+                else:
+                    replyText(event, "抱歉，革命失敗，請再試一次")
+
+            elif event.message.text == '取消':
+                tmp.pop(id, -1)
+                replyText(event, "革命未成，永不忘初衷！")
+                
+            else:
+                replyText(event, "抱歉同志，沒辦法理解您的指令。難道你是反革命分子？")
+        else:
+            replyText(event, "抱歉，無法處理您的訂單，這可能是因為訂單數出過上限。歡迎同志親自到訪參與革命！")
 
 
 

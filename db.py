@@ -77,3 +77,14 @@ def how_much_l(amount: int) -> dict:
         i += 1
     
     return l
+
+def delete(i) -> bool:
+    try:
+        db_d.delete_rows(i)
+        return True
+    except:
+        return False
+
+def what_id(i: int) -> str:
+    df = db_d.get_as_df()
+    return df['id'][i]

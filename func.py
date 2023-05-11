@@ -173,7 +173,7 @@ def send_back_class(event):
             #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10'))
             # ]))
         message = TextMessage(
-            text="同志是哪個班級？（範例：「班級：忠」）",
+            text="同志是哪個班級？\n（範例：「班級：忠」）",
         )
         
         line_bot_api.reply_message(event.reply_token, message)
@@ -185,7 +185,7 @@ def send_back_class(event):
 
 def send_back_number(event):
     try:
-        message = TextSendMessage(text='同志的座號是？（範例：「座號：1」）')
+        message = TextSendMessage(text='同志的座號是？\n（範例：「座號：1」）')
         line_bot_api.reply_message(event.reply_token, message)
     except:
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
@@ -193,7 +193,7 @@ def send_back_number(event):
 
 def send_back_name(event):
     try:
-        message = TextSendMessage(text='同志的名字是？（範例：「姓名：弗拉迪米爾·列寧」）')
+        message = TextSendMessage(text='同志的名字是？\n（範例：「姓名：弗拉迪米爾·列寧」）')
         line_bot_api.reply_message(event.reply_token, message)
     except:
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
@@ -201,7 +201,7 @@ def send_back_name(event):
 
 def send_back_pos(event):
     try:
-        message = TextSendMessage(text='同志要送去哪裡？（範例：「位置：校門口」）')
+        message = TextSendMessage(text='同志要送去哪裡？\n（範例：「位置：校門口」）')
         line_bot_api.reply_message(event.reply_token, message)
     except:
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
@@ -209,7 +209,7 @@ def send_back_pos(event):
 
 def send_back_note(event):
     try:
-        message = TextSendMessage(text='同志有什麼話要說？（範例：「備註：找一位有帶紅色帽子的」、「備註：無」）')
+        message = TextSendMessage(text='同志有什麼話要說？\n（範例：「備註：找一位有帶紅色帽子的」、「備註：無」）')
         line_bot_api.reply_message(event.reply_token, message)
     except:
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
@@ -222,7 +222,6 @@ def send_back_confirm(event, amount_m, amount_l) -> int:
     try:
         bought = []
         sum = 0
-        # TODO amount_l
         for name, value in db.how_much_m(amount_m).items():
         # for name, value in {'「我」的': {'amount': 3, 'price': 120}}:
             bought.append(TextComponent(text = name + ' × ' + str(value['amount']) + '＝' + '$' + str(value["price"]) + '\n'))
@@ -231,15 +230,20 @@ def send_back_confirm(event, amount_m, amount_l) -> int:
         # for name, value in {'「我」的': {'amount': 3, 'price': 120}}:
             bought.append(TextComponent(text = name + ' × ' + str(value['amount']) + '＝' + '$' + str(value["price"]) + '\n'))
             sum += value["price"]
-        print("check(send_back_confirm)")
-        #TODO
         bought.append(TextComponent(text = '總價：' + str(sum) + '\n'))
         bought.append(TextComponent(
-                        text = "※由於園遊券最小面額為$5\n　應付價格可能與總價有出入",
+                        text = "※由於園遊券最小面額為$5",
                         color="#C8BCC3",
                         size="xs",
                         margin='xs'
                         ))
+        bought.append(TextComponent(
+                        text = "應付價格可能與總價有出入",
+                        color="#C8BCC3",
+                        size="xs",
+                        margin='xs'
+                        ))
+        
         if sum % 5 != 0:
             sum =(sum//5 + 1) * 5
 
@@ -302,7 +306,6 @@ def send_back_confirm(event, amount_m, amount_l) -> int:
         line_bot_api.reply_message(event.reply_token,message)
         return sum
     except:
-        message = TextSendMessage(text='抱歉，革命失敗，請再試一次(from send_back_confirm)')
-        #TODO
+        message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
         line_bot_api.reply_message(event.reply_token, message)
         return -1
