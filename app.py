@@ -63,10 +63,10 @@ started = False
 def handle_message(event):
     global started
     id = event.source.user_id
-    if event.message.text == "開始" and id in os.getenv("MY_ID"):
+    if event.message.text == "開始" and id in os.getenv("ADMINS"):
         started = True
         replyText(event, "已開始")
-    elif event.message.text == "結束" and id in os.getenv("MY_ID"):
+    elif event.message.text == "結束" and id in os.getenv("ADMINS"):
         started = False
         replyText(event, "已結束")
     elif not started:
