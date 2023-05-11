@@ -63,6 +63,9 @@ started = False
 def handle_message(event):
     global started
     id = event.source.user_id
+    if event.message.text == "menu":
+        return 0
+    
     if event.message.text == "開始" and id in os.getenv("ADMINS"):
         started = True
         replyText(event, "已開始")
