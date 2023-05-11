@@ -17,6 +17,7 @@ import db
 
 tmp = {}
 
+
 app = Flask(__name__)
 
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
@@ -57,9 +58,21 @@ def callback():
     return 'OK'
 
 
+started = False
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    global started
     id = event.source.user_id
+    if event.message.text == "開始" and id in os.getenv("MY_ID"):
+        started = True
+        replyText(event, "已開始")
+    elif event.message.text == "結束" and id in os.getenv("MY_ID"):
+        started = False
+        replyText(event, "已結束")
+    elif not started:
+        replyText(event, "抱歉同志，革命尚未開始")
+        return 0
+
     if db.is_ok(id):
         message = TextSendMessage(text=event.message.text)
         # line_bot_api.reply_message(event.reply_token, message)
@@ -180,7 +193,7 @@ def handle_message(event):
                 note = event.message.text.split(':')[1]
             try:
                 tmp[id]['note'] = note
-                total = func.send_back_confirm(event, tmp[id]['amount_m'], tmp[id]['amount_l'])
+                total = func.send_back_confirm(event, tmp[id])
                 if total != -1:
                     tmp[id]['total'] = total
             except:
@@ -211,8 +224,6 @@ def handle_message(event):
                     replyText(event, "loser")
             else:
                 replyText(event, "抱歉同志，沒辦法理解您的指令。難道你是反革命分子？")
-
-                
 
         elif event.message.text.split(' ')[0] == 'D':
             if id in os.getenv("ADMINS"):
