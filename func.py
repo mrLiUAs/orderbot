@@ -138,40 +138,6 @@ def send_back_grade(event):
 def send_back_class(event):
     try:
         print("我要進來了小夫")
-        # message = TextSendMessage(
-        #     text='同志是哪個班級？',
-            # quick_reply=QuickReply(items=[
-            #     QuickReplyButton(action=PostbackTemplateAction(label="忠", text="班級：忠", data='NUM&1')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="孝", text="班級：孝", data='NUM&2')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="仁", text="班級：仁", data='NUM&3')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="愛", text="班級：愛", data='NUM&4')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="信", text="班級：信", data='NUM&5')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="義", text="班級：義", data='NUM&6')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="和", text="班級：和", data='NUM&7')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="平", text="班級：平", data='NUM&8')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="智", text="班級：智", data='NUM&9')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="勇", text="班級：勇", data='NUM&10')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="誠", text="班級：誠", data='NUM&11')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="正", text="班級：正", data='NUM&12')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="勤", text="班級：勤", data='NUM&13')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="齊", text="班級：齊", data='NUM&14'))
-            # ])
-            # quick_reply=QuickReply(items=[
-            #     QuickReplyButton(action=PostbackTemplateAction(label="1", text="數量（大）：1", data='NUM&1')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="2", text="數量（大）：2", data='NUM&2')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="3", text="數量（大）：3", data='NUM&3')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="哈", text="數量（大）：4", data='NUM&4')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="5", text="數量（大）：5", data='NUM&5')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="6", text="數量（大）：6", data='NUM&6')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="7", text="數量（大）：7", data='NUM&7')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="8", text="數量（大）：8", data='NUM&8')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="9", text="數量（大）：9", data='NUM&9')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10')),
-            #     QuickReplyButton(action=PostbackTemplateAction(label="10", text="數量（大）：10", data='NUM&10'))
-            # ]))
         message = TextMessage(
             text="同志是哪個班級？\n（範例：「班級：忠」）",
         )
@@ -215,11 +181,13 @@ def send_back_note(event):
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
         line_bot_api.reply_message(event.reply_token, message)
 
-def send_back_confirm(event, amount_m, amount_l) -> int:
+def send_back_confirm(event, data: dict) -> int:
     '''
     send back sum: int, -1 for error
     '''
     try:
+        amount_m = data['amount_m']
+        amount_l =data['amount_l']
         bought = []
         sum = 0
         for name, value in db.how_much_m(amount_m).items():
@@ -240,6 +208,13 @@ def send_back_confirm(event, amount_m, amount_l) -> int:
         bought.append(TextComponent(
                         text = "應付價格可能與總價有出入",
                         color="#C8BCC3",
+                        size="xs",
+                        margin='xs'
+                        ))
+        note = "備註：" + data['note']
+        bought.append(TextComponent(
+                        text = note,
+                        color="#454545",
                         size="xs",
                         margin='xs'
                         ))
@@ -273,16 +248,6 @@ def send_back_confirm(event, amount_m, amount_l) -> int:
                                     data='H'
                                 )
                                 )
-                            # ButtonComponent(
-                            #     style='secondary',
-                            #     color="#C4DABB",
-                            #     action=PostbackTemplateAction(
-                            #         label='繼續購物',
-                            #         text='繼續購物',
-                            #         data='G'
-                            #     )
-                            #     )
-                            
                             ]
                         
                         ),
