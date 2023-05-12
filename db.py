@@ -7,6 +7,7 @@ db_t = gc.open_by_url(os.getenv("DB_URL"))[1]
 bl = gc.open_by_url(os.getenv("DB_URL"))[2]
 price_m = gc.open_by_url(os.getenv("DB_URL")).worksheet_by_title("price_mini")
 price_l = gc.open_by_url(os.getenv("DB_URL")).worksheet_by_title("price_large")
+deliver_fee = gc.open_by_url(os.getenv("DB_URL")).worksheet_by_title("price_deliver")
 
 def is_in_d(id) -> bool:
     df = db_d.get_as_df()
@@ -91,3 +92,9 @@ def find_data(i: int):
         return df.values[i]
     except:
         return []
+    
+def get_deliver_fee() -> int:
+    try:
+        return int(deliver_fee.get_value('A1'))
+    except:
+        return -1

@@ -188,6 +188,9 @@ def send_back_confirm(event, data: dict) -> int:
     try:
         amount_m = data['amount_m']
         amount_l =data['amount_l']
+        deliver_fee = db.get_deliver_fee()
+        if deliver_fee == -1:
+            raise Exception
         bought = []
         sum = 0
         for name, value in db.how_much_m(amount_m).items():
@@ -198,7 +201,9 @@ def send_back_confirm(event, data: dict) -> int:
         # for name, value in {'「我」的': {'amount': 3, 'price': 120}}:
             bought.append(TextComponent(text = name + ' × ' + str(value['amount']) + '＝' + '$' + str(value["price"]) + '\n'))
             sum += value["price"]
-        bought.append(TextComponent(text = '總價：' + str(sum) + '\n'))
+        sum += deliver_fee
+        bought.append(TextComponent(text = '運費：$' + str(deliver_fee) + '\n'))
+        bought.append(TextComponent(text = '總價：$' + str(sum) + '\n'))
         bought.append(TextComponent(
                         text = "※由於園遊券最小面額為$5",
                         color="#C8BCC3",
@@ -222,7 +227,7 @@ def send_back_confirm(event, data: dict) -> int:
         if sum % 5 != 0:
             sum =(sum//5 + 1) * 5
 
-        bought.append(TextComponent(text = '應付價格：' + str(sum) + '\n', weight='bold'))
+        bought.append(TextComponent(text = '應付價格：$' + str(sum) + '\n', weight='bold'))
 
         bubble = BubbleContainer(
             direction='ltr',
