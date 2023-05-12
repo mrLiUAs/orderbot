@@ -288,7 +288,7 @@ def send_cancel(event, id: str, data: list, res: str) -> bool:
         bought.append(TextComponent(text = res + '\n\n', weight='bold', color="#ff0000"))
         bought.append(TextComponent(text = '價格：$' + str(total) + '\n', weight='bold'))
         bought.append(TextComponent(text = 'MINI：' + str(amount_m) + '份\n'))
-        bought.append(TextComponent(text = 'LARGE' + str(amount_l) + '份\n'))
+        bought.append(TextComponent(text = 'LARGE：' + str(amount_l) + '份\n'))
 
         note = "備註：" + data[-1]
         bought.append(TextComponent(
