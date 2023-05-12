@@ -85,6 +85,9 @@ def delete(i) -> bool:
     except:
         return False
 
-def what_id(i: int) -> str:
-    df = db_d.get_as_df()
-    return df['id'][i]
+def find_data(i: int):
+    try:
+        df = db_d.get_as_df()
+        return df.values[i]
+    except:
+        return []
