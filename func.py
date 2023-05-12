@@ -274,3 +274,47 @@ def send_back_confirm(event, data: dict) -> int:
         message = TextSendMessage(text='抱歉，革命失敗，請再試一次')
         line_bot_api.reply_message(event.reply_token, message)
         return -1
+    
+def send_cancel(event, id: str, data: list, res: str) -> bool:
+    '''
+    send cancel to user, False for error
+    '''
+    try:
+        amount_m = data[2]
+        amount_l = data[3]
+        total = data[1]
+        bought = []
+        bought.append(TextComponent(text = '同志您的訂單已被取消，原因如下：\n', weight='bold', color="#ff0000"))
+        bought.append(TextComponent(text = res + '\n\n', weight='bold', color="#ff0000"))
+        bought.append(TextComponent(text = '價格：$' + str(total) + '\n', weight='bold'))
+        bought.append(TextComponent(text = 'MINI：' + str(amount_m) + '份\n'))
+        bought.append(TextComponent(text = 'LARGE' + str(amount_l) + '份\n'))
+
+        note = "備註：" + data[-1]
+        bought.append(TextComponent(
+                        text = note,
+                        color="#454545",
+                        size="xs",
+                        margin='xs'
+                        ))
+
+        bubble = BubbleContainer(
+            direction='ltr',
+            header = BoxComponent(
+                layout='vertical',
+                #background_color='#DBD3D8',
+                contents=bought
+            ),
+            footer = BoxComponent(
+                layout='vertical',
+                contents=[]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="確認訂單",contents=bubble)
+        line_bot_api.push_message(id, message)
+        return True
+    except:
+        message = TextSendMessage(text='回覆訂單錯了')
+        line_bot_api.reply_message(event.reply_token, message)
+        return False
