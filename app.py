@@ -66,13 +66,13 @@ def handle_message(event):
     if event.message.text == "menu" or event.message.text == "菜單":
         return 0
     
-    if event.message.text == "開始" and id in os.getenv("ADMINS"):
+    if event.message.text == "開始" and id in os.getenv("ADMINS").split(','):
         started = True
         replyText(event, "已開始")
-    elif event.message.text == "結束" and id in os.getenv("ADMINS"):
+    elif event.message.text == "結束" and id in os.getenv("ADMINS").split(','):
         started = False
         replyText(event, "已結束")
-    elif not started and id not in os.getenv("ADMINS"):
+    elif not started and id not in os.getenv("ADMINS").split(','):
         replyText(event, "抱歉同志，革命尚未開始")
         return 0
 
@@ -213,7 +213,7 @@ def handle_message(event):
             replyText(event, "革命未成，永不忘初衷！")
         
         elif event.message.text.split(' ')[0] == 'C':
-            if id in os.getenv("ADMINS"):
+            if id in os.getenv("ADMINS").split(','):
                 cmd = event.message.text.split(' ')
                 try:
                     if int(cmd[1]) == 1 or int(cmd[1]) == 0:
@@ -229,7 +229,7 @@ def handle_message(event):
                 replyText(event, "抱歉同志，沒辦法理解您的指令。難道你是反革命分子？")
 
         elif event.message.text.split(' ')[0] == 'D':
-            if id in os.getenv("ADMINS"):
+            if id in os.getenv("ADMINS").split(','):
                 # try:
                     cmd = event.message.text.split(' ')
                     if int(cmd[1]) == 0:
